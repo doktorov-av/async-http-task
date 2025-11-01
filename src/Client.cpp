@@ -4,12 +4,12 @@
 
 #include "Client.hpp"
 
+inline constexpr auto g_Endpoint ="/api/photos";
+
 Client::Client(const std::string &url) : m_HttpClient(url) {
 }
 
 httplib::Result Client::Send(const Message &message) {
-    using std::string_literals::operator ""s;
-
     if (!IsValid(message)) {
         throw std::invalid_argument("message is not valid");
     }
@@ -17,18 +17,18 @@ httplib::Result Client::Send(const Message &message) {
     const auto content = std::string(reinterpret_cast<const char *>(message.image.data()), message.image.size());
     const auto items = httplib::UploadFormDataItems{
         httplib::UploadFormData{
-            .name = "image"s,
+            .name = "image",
             .content = content,
-            .filename = "image.png"s,
-            .content_type = "image/png"s
+            .filename = "image.png",
+            .content_type = "image/png"
         },
         httplib::UploadFormData{
-            .name = "payload_json"s,
+            .name = "payload_json",
             .content = json(message.payload).dump(),
             .filename = {},
-            .content_type = "application/json"s,
+            .content_type = "application/json",
         },
     };
 
-    return m_HttpClient.Post("/api/photos"s, items);
+    return m_HttpClient.Post(g_Endpoint, items);
 }

@@ -35,9 +35,9 @@ void Sender::SendLoop() {
         }
 
         try {
-            auto response = m_Client->Send(messageData.message);
+            auto result = m_Client->Send(messageData.message);
             if (messageData.callback) {
-                messageData.callback(std::move(response));
+                messageData.callback(std::move(result));
             }
         } catch (std::invalid_argument &e) {
             std::cerr << "message couldn't be sent: " << e.what() << std::endl;
@@ -47,7 +47,7 @@ void Sender::SendLoop() {
 
 bool Sender::QueueMessage(Message message, Callback callback) {
     std::lock_guard lock(m_Mtx);
-    assert(m_MaxQueueSize < m_MessageQueue.size());
+    assert(m_MessageQueue.size() <= m_MaxQueueSize);
 
     if (m_MaxQueueSize == m_MessageQueue.size()) {
         m_MessageQueue.pop_front();

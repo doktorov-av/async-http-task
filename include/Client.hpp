@@ -10,7 +10,6 @@
 #include "IClient.hpp"
 #include "Message.hpp"
 
-
 class Client : public IClient {
 public:
     explicit Client(const std::string &url);
