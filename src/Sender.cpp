@@ -4,7 +4,8 @@
 
 #include "Sender.hpp"
 
-Sender::Sender(IClient *client, size_t maxQueueSize) : m_IsRunning(false), m_MaxQueueSize(maxQueueSize), m_Client(client) {
+Sender::Sender(IClient *client, size_t maxQueueSize) : m_IsRunning(false), m_MaxQueueSize(maxQueueSize),
+                                                       m_Client(client) {
     assert(maxQueueSize > 0 && "queue size must be positive");
     assert(client);
 }
