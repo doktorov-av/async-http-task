@@ -6,9 +6,9 @@
 
 bool IsValid(const Message &message) {
     for (const auto &obj: message.payload.objects) {
-        if (obj.x_c >= 1.f || obj.x_c <= 0.f)
+        if (obj.x_c > 1.f || obj.x_c < 0.f)
             return false;
-        if (obj.y_c >= 1.f || obj.y_c <= 0.f)
+        if (obj.y_c > 1.f || obj.y_c < 0.f)
             return false;
     }
     return true;
