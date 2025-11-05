@@ -10,9 +10,7 @@ Client::Client(const std::string &url) : m_HttpClient(url) {
 }
 
 httplib::Result Client::Send(const Message &message) {
-    if (!IsValid(message)) {
-        throw std::invalid_argument("message is not valid");
-    }
+    assert(IsValid(message));
 
     const auto content = std::string(reinterpret_cast<const char *>(message.image.data()), message.image.size());
     const auto items = httplib::UploadFormDataItems{

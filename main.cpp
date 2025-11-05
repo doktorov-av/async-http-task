@@ -24,12 +24,17 @@ int main() {
         }
     };
 
-    sender.QueueMessage(msg, [](const httplib::Result& result) {
+    bool ok = sender.QueueMessage(msg, [](const httplib::Result& result) {
         // this callback is executed not in main thread, so user must ensure handling is thread safe
         std::cout << "Got response from server: " << result.error() << ", thread id = " << std::this_thread::get_id() << '\n';
     });
 
+    if (!ok) {
+        std::cerr << "Couldn't queue message\n";
+    } else {
     std::cout << "Sent message, doing other work on thread " << std::this_thread::get_id() << '\n';
+    }
+
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
     return 0;

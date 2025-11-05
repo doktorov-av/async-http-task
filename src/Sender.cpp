@@ -49,6 +49,10 @@ void Sender::SendLoop() {
 }
 
 bool Sender::QueueMessage(Message message, Callback callback) {
+    if (!IsValid(message)) {
+        return false;
+    }
+
     std::lock_guard lock(m_Mtx);
     assert(m_MessageQueue.size() <= m_MaxQueueSize);
 

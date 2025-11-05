@@ -3,14 +3,28 @@
 //
 
 #include "Message.hpp"
+#include "Math.hpp"
 
 bool IsValid(const Message &message) {
     for (const auto &obj: message.payload.objects) {
-        if (obj.x_c > 1.f || obj.x_c < 0.f)
+        if (!InRange(obj.x_c, 0.f, 1.f))
             return false;
-        if (obj.y_c > 1.f || obj.y_c < 0.f)
+        if (!InRange(obj.y_c, 0.f, 1.f))
+            return false;
+
+        if (obj.label.empty())
             return false;
     }
+
+    if (!InRange(message.payload.shotLat, -90.f, 90.f))
+        return false;
+
+    if (!InRange(message.payload.shotLon, -180.f, +180.f))
+        return false;
+
+    if (message.payload.objects.empty())
+        return false;
+
     return true;
 }
 
