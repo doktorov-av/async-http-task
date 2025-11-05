@@ -32,7 +32,7 @@ int main() {
     if (!ok) {
         std::cerr << "Couldn't queue message\n";
     } else {
-    std::cout << "Sent message, doing other work on thread " << std::this_thread::get_id() << '\n';
+        std::cout << "Sent message, doing other work on thread " << std::this_thread::get_id() << '\n';
     }
 
 
