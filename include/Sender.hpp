@@ -39,6 +39,7 @@ private:
     std::atomic<bool> m_IsRunning;
     const size_t m_MaxQueueSize = 0;
     IClient* m_Client = nullptr;
+    std::condition_variable m_Cv;
 };
 
 #endif //SENDER_HPP

@@ -15,7 +15,7 @@ Sender::~Sender() {
 }
 
 void Sender::Start() {
-    if (m_IsRunning.exchange(true, std::memory_order_relaxed)) {
+    if (m_IsRunning.exchange(true)) {
         return;
     }
 
@@ -26,9 +26,15 @@ void Sender::SendLoop() {
     while (m_IsRunning) {
         MessageData messageData{};
         {
-            std::lock_guard lock(m_Mtx);
+            std::unique_lock lock(m_Mtx);
+            m_Cv.wait(lock, [this]() { return !m_IsRunning || !m_MessageQueue.empty(); });
+
+            if (!m_IsRunning) {
+                return;
+            }
+
             if (!m_MessageQueue.empty()) {
-                messageData = m_MessageQueue.front();
+                messageData = std::move(m_MessageQueue.front());
                 m_MessageQueue.pop_front();
             } else {
                 continue;
@@ -53,7 +59,7 @@ bool Sender::QueueMessage(Message message, Callback callback) {
         return false;
     }
 
-    std::lock_guard lock(m_Mtx);
+    std::unique_lock lock(m_Mtx);
     assert(m_MessageQueue.size() <= m_MaxQueueSize);
 
     if (m_MaxQueueSize == m_MessageQueue.size()) {
@@ -65,11 +71,15 @@ bool Sender::QueueMessage(Message message, Callback callback) {
         std::move(callback)
     });
 
+    lock.unlock();
+    m_Cv.notify_one();
+
     return true;
 }
 
 void Sender::Stop() {
-    m_IsRunning.store(false, std::memory_order_relaxed);
+    m_IsRunning.store(false);
+    m_Cv.notify_one();
 
     if (m_SendThread.joinable())
         m_SendThread.join();
