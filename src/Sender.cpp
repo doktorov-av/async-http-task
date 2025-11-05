@@ -40,8 +40,10 @@ void Sender::SendLoop() {
             if (messageData.callback) {
                 messageData.callback(std::move(result));
             }
-        } catch (std::invalid_argument &e) {
+        } catch (std::exception &e) {
             std::cerr << "message couldn't be sent: " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "unknown exception thrown sending message\n";
         }
     }
 }
